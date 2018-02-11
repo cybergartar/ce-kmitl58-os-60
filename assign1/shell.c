@@ -66,6 +66,16 @@ void sigint_handler(int signal) { // handle CTRL+C
     main shell loop to act as normal mode shell
     continuously take command from user until
     "quit" is caught
+    note that line and cmd_stream would be something
+    like this
+    
+        cmd_stream to be splitted to cmd
+        _______________|_____________
+       |   |     |         |        |
+      ls; pwd; cd ..; echo Hello; quit
+      |______________________________|
+                      |
+                    line
 
     @param quit_status use to indicate if batch mode caught
     "quit". if caught, this var must be 0 else 1
