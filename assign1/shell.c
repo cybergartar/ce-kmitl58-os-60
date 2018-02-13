@@ -7,6 +7,7 @@
 #include <sys/wait.h> 
 #include <fcntl.h> 
 #include <signal.h> 
+#include <pwd.h>
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
@@ -334,8 +335,25 @@ int cmd_execute_cmd(char **cmd) {
   // detect "cd" command
   if (strcmp(cmd[0], "cd") == 0) {
 
+    char *path = cmd[1];
+    
+    // if user enter only cd command, go to home dir
+    if (path == 0) {
+
+      // if $HOME is set, use it
+      if ((path = getenv("HOME")) == NULL) {
+
+        /** 
+          if not, use getuid to get the user id of the current user 
+          and then getpwuid to get the password entry (which includes 
+          the home directory) of that user
+        */
+        path = getpwuid(getuid())->pw_dir;
+      }
+    }
+
     // change working dir
-    cd(cmd[1]); 
+    cd(path); 
     return 1;
   }
 
