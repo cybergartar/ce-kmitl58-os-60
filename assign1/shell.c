@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   } else if (argc == 1) { // Normal mode
     shell_loop(1); // run shell in normal mode
   } else {
-    printf("SHELL: Error running shell. Usage %s <cmd_batch file>\n", argv[0]); // bad run shell command
+    fprintf(stderr, "SHELL: Error running shell. Usage %s <cmd_batch file>\n", argv[0]); // bad run shell command
   }
   printf("Exited\n"); // after done shell
   return EXIT_SUCCESS; 
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     @return void
 */
 void sigint_handler(int signal) { // handle CTRL+C
-  printf("\nExited ungracefully\n");
+  fprintf(stderr, "\nSHELL: Exited ungracefully\n");
   exit(EXIT_FAILURE);
 }
 
@@ -139,9 +139,6 @@ void shell_loop(int quit_status) {
         // if found output redirect symbol and output file
         if (strcmp(cmd[j], ">") == 0 && cmd[j+1] != NULL) {
 
-          // copy stdout fd
-          stdoutFd = dup(1);
-
           // try to create new output file
           if ((optFd = open(cmd[j+1], O_CREAT|O_TRUNC|O_WRONLY, 0644)) < 0) {
 
@@ -150,9 +147,12 @@ void shell_loop(int quit_status) {
 
             // make this command null
             cmd[0] = 0;
+            break;
           }
 
           // if no error, redirect stdout to that file
+          // copy stdout fd
+          stdoutFd = dup(1);
           dup2(optFd, 1);
 
           // null out the '>'
@@ -161,20 +161,20 @@ void shell_loop(int quit_status) {
         // if found input redirect symbol and input file
         else if (strcmp(cmd[j], "<") == 0 && cmd[j+1] != NULL && strcmp(cmd[j], ">") != 0) { 
 
-          // copy stdin fd
-          stdinFd = dup(0);
-
           // try to open input file
           if ((inpFd = open(cmd[j+1], O_RDONLY)) < 0) {
 
             // errir notify
-            printf("SHELL: Error, no file named %s\n", cmd[j+1]);
+            perror(cmd[j+1]);
 
             // make this command null
             cmd[0] = 0;
+            break;
           }
 
           // if no error, redirect that file to stdin
+          // copy stdin fd
+          stdinFd = dup(0);
           dup2(inpFd, 0);
 
           // null out the '>'
@@ -184,7 +184,7 @@ void shell_loop(int quit_status) {
         else if ( (strcmp(cmd[j], ">") == 0 && cmd[j+1] == NULL) || (strcmp(cmd[j], "<") == 0 && ( cmd[j+1] == NULL || strcmp(cmd[j], ">") == 0)) ){
 
           // error notify
-          printf("SHELL: Error, unable to redirect file\n");
+          fprintf(stderr, "SHELL: Error, unable to redirect file\n");
 
           // make this command null
           cmd[0] = 0;
@@ -192,14 +192,15 @@ void shell_loop(int quit_status) {
         j++;
       }
 
-      // execute command and get quit status
-      status = cmd_execute_cmd(cmd);
+      if (cmd[0] != 0) {
+        // execute command and get quit status
+        status = cmd_execute_cmd(cmd);
 
-      // if command is quit
-      if (status == 0) 
-        
-        // break shell loop
-        break;
+        // if command is quit
+        if (status == 0)  
+          // break shell loop
+          break;
+      }
 
       // if redirected stdout, change it back
       if (stdoutFd != -1) {
@@ -266,7 +267,7 @@ char **cmd_split(char *line, int split_type) {
   
   // handle error where cannot allocate memory
   if ( ! tokens) {
-    fprintf(stderr, "shell: allocation error\n"); 
+    fprintf(stderr, "SHELL: allocation error\n"); 
     exit(EXIT_FAILURE); 
   }
 
@@ -306,7 +307,7 @@ char **cmd_split(char *line, int split_type) {
       bufsize += CMD_TOK_BUFSIZE; 
       tokens = realloc(tokens, bufsize *sizeof(char *)); 
       if ( ! tokens) {
-        fprintf(stderr, "shell: allocation error\n"); 
+        fprintf(stderr, "SHELL: allocation error\n"); 
         exit(EXIT_FAILURE); 
       }
     }
@@ -348,7 +349,7 @@ int cmd_execute_cmd(char **cmd) {
   else if (strcmp(cmd[0], "exit") == 0 || strcmp(cmd[0], "exit ") == 0) {
 
     // we don't use "exit" in this shell, so notify an error
-    printf("SHELL: Please use quit instead.\n"); 
+    fprintf(stderr, "SHELL: Please use quit instead.\n"); 
 
     // return not quit
     return 1;
@@ -401,7 +402,7 @@ void cd(char *pth) {
 
     // if no dir named in input, show error
     if (status != 0) {
-      printf("SHELL: no directory named %s.\n", path); 
+      perror(pth);
     }
 }
 
