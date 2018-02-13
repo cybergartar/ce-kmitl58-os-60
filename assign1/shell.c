@@ -140,49 +140,101 @@ void shell_loop(int quit_status) {
         // if found output redirect symbol and output file
         if (strcmp(cmd[j], ">") == 0 && cmd[j+1] != NULL) {
 
-          // try to create new output file
-          if ((optFd = open(cmd[j+1], O_CREAT|O_TRUNC|O_WRONLY, 0644)) < 0) {
+          // if we never redirect stdout before in this command
+          if (stdoutFd == -1) {
 
-            // error handling
-            perror(cmd[j+1]);
+            // try to create new output file
+            if ((optFd = open(cmd[j+1], O_CREAT|O_TRUNC|O_WRONLY, 0644)) < 0) {
+
+              // error handling
+              perror(cmd[j+1]);
+
+              // make this command null
+              cmd[0] = 0;
+              break;
+            }
+
+            // if no error, redirect stdout to that file
+            // copy stdout fd
+            stdoutFd = dup(1);
+            dup2(optFd, 1);
+
+            // null out the '>'
+            cmd[j] = 0;
+          } else { // else user use some redirect before in this command
+            fprintf(stderr, "SHELL: Error. Detect more than one output redirect.\n");
 
             // make this command null
-            cmd[0] = 0;
-            break;
+              cmd[0] = 0;
+              break;
           }
-
-          // if no error, redirect stdout to that file
-          // copy stdout fd
-          stdoutFd = dup(1);
-          dup2(optFd, 1);
-
-          // null out the '>'
-          cmd[j] = 0;
         } 
+        // if found output append redirect symbol and output file
+        else if (strcmp(cmd[j], ">>") == 0 && cmd[j+1] != NULL) { 
+
+          // if we never redirect stdout before in this command
+          if (stdoutFd == -1) {
+
+            // try to append or create output file
+            if ((optFd = open(cmd[j+1], O_CREAT|O_WRONLY|O_APPEND, 0644)) < 0) {
+
+              // error handling
+              perror(cmd[j+1]);
+
+              // make this command null
+              cmd[0] = 0;
+              break;
+            }
+
+            // if no error, redirect stdout to that file
+            // copy stdout fd
+            stdoutFd = dup(1);
+            dup2(optFd, 1);
+
+            // null out the '>'
+            cmd[j] = 0;
+          } else {  // else user use some redirect before in this command
+            fprintf(stderr, "SHELL: Error. Detect more than one output redirect.\n");
+
+            // make this command null
+              cmd[0] = 0;
+              break;
+          }
+        }
         // if found input redirect symbol and input file
         else if (strcmp(cmd[j], "<") == 0 && cmd[j+1] != NULL && strcmp(cmd[j], ">") != 0) { 
 
-          // try to open input file
-          if ((inpFd = open(cmd[j+1], O_RDONLY)) < 0) {
+          // if we never redirect stdin before in this command
+          if (stdinFd == -1) {
+            
+            // try to open input file
+            if ((inpFd = open(cmd[j+1], O_RDONLY)) < 0) {
 
-            // errir notify
-            perror(cmd[j+1]);
+              // errir notify
+              perror(cmd[j+1]);
+
+              // make this command null
+              cmd[0] = 0;
+              break;
+            }
+
+            // if no error, redirect that file to stdin
+            // copy stdin fd
+            stdinFd = dup(0);
+            dup2(inpFd, 0);
+
+            // null out the '>'
+            cmd[j] = 0;
+          } else { // else user use some redirect before in this command
+            fprintf(stderr, "SHELL: Error. Detect more than one input redirect.\n");
 
             // make this command null
-            cmd[0] = 0;
-            break;
+              cmd[0] = 0;
+              break;
           }
-
-          // if no error, redirect that file to stdin
-          // copy stdin fd
-          stdinFd = dup(0);
-          dup2(inpFd, 0);
-
-          // null out the '>'
-          cmd[j] = 0;
         } 
         // if redirect symbol not followed by filename
-        else if ( (strcmp(cmd[j], ">") == 0 && cmd[j+1] == NULL) || (strcmp(cmd[j], "<") == 0 && ( cmd[j+1] == NULL || strcmp(cmd[j], ">") == 0)) ){
+        else if ( (strcmp(cmd[j], ">") == 0 && cmd[j+1] == NULL) || (strcmp(cmd[j], ">>") == 0 && cmd[j+1] == NULL) || (strcmp(cmd[j], "<") == 0 && ( cmd[j+1] == NULL || strcmp(cmd[j], ">") == 0)) ){
 
           // error notify
           fprintf(stderr, "SHELL: Error, unable to redirect file\n");
