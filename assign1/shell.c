@@ -102,7 +102,7 @@ void shell_loop(int quit_status) {
       prompt_path[1] = 0;
     }
     // print prompt
-    printf("[%s]> ", prompt_path);
+    printf("\x1B[36m[%s]>\x1B[0m ", prompt_path);
     // read line from user
     line = cmd_read_line();
     // slice line into commands by ;
