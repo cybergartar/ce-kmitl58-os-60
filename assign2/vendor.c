@@ -236,12 +236,12 @@ void* run_supplier(void* arg) {
         // clear penalty
         penalty = 0;
         // notify user
-        printf("\e[96m[ S]*\e[39m %s#%u\tsupplier interval is adjusted to %u\n", product_name[prod_id], supplier_id, intv);
+        printf("\e[96m[S]*\e[39m %s#%u\tsupplier interval is adjusted to %u\n", product_name[prod_id], supplier_id, intv);
       }
       // count it as number of tries
       penalty++;
       // notify user
-      printf("\e[96m[ S]\e[39m %s %s#%u\tsupplier going to \e[93mwait\e[39m\t \e[93m\e[1m[BUSY]\e[0m\e[39m.  Penalty = %d\n", gettime(), product_name[prod_id], supplier_id, penalty);
+      printf("\e[96m[S]\e[39m %s %s#%u\tsupplier going to \e[93mwait\e[39m\t \e[93m\e[1m[BUSY]\e[0m\e[39m.  Penalty = %d\n", gettime(), product_name[prod_id], supplier_id, penalty);
 
       // clear BUSY_FLAG
       BUSY_FLAG = 0;
@@ -257,12 +257,12 @@ void* run_supplier(void* arg) {
         // clear penalty
         penalty = 0;
         // notify user
-        printf("\e[96m[ S]*\e[39m %s#%u\tsupplier interval is adjusted to %u\n", product_name[prod_id], supplier_id, intv);
+        printf("\e[96m[S]*\e[39m %s#%u\tsupplier interval is adjusted to %u\n", product_name[prod_id], supplier_id, intv);
       }
       // count it as number of tries
       penalty++;
       // notify user
-      printf("\e[96m[ S]\e[39m %s %s#%u\tsupplier going to \e[93mwait\e[39m\t \e[95m\e[1m[FULL]\e[0m\e[39m.  Penalty = %d\n", gettime(), product_name[prod_id], supplier_id, penalty);
+      printf("\e[96m[S]\e[39m %s %s#%u\tsupplier going to \e[93mwait\e[39m\t \e[95m\e[1m[FULL]\e[0m\e[39m.  Penalty = %d\n", gettime(), product_name[prod_id], supplier_id, penalty);
       
     } else {
       // else, we can fill the product
@@ -275,7 +275,7 @@ void* run_supplier(void* arg) {
       intv = base_intv;
 
       // notify user
-      printf("\e[96m[ S]\e[39m %s %s\e[96m#%u\tsupplied\e[39m 1 unit. stock after = %d\n", gettime(), product_name[prod_id], supplier_id, supply[prod_id]);
+      printf("\e[96m[S]\e[39m %s %s\e[96m#%u\tsupplied\e[39m 1 unit. stock after = %d\n", gettime(), product_name[prod_id], supplier_id, supply[prod_id]);
     }
 
     // unlock access to supply array of product
@@ -436,12 +436,12 @@ void* run_consumer(void* arg) {
         // clear penalty
         penalty = 0;
         // notify user
-        printf("\e[92m[C ]*\e[39m %s#%u\tconsumer interval is adjusted to %u\n", product_name[prod_id], consumer_id, intv);
+        printf("\e[92m[C]*\e[39m %s#%u\tconsumer interval is adjusted to %u\n", product_name[prod_id], consumer_id, intv);
       }
       // count it as number of tries
       penalty++;
       // notify user
-      printf("\e[92m[C ]\e[39m %s %s#%u\tconsumer going to \e[93mwait\e[39m\t \e[93m\e[1m[BUSY]\e[0m\e[39m.  Penalty = %d\n", gettime(), product_name[prod_id], consumer_id, penalty);
+      printf("\e[92m[C]\e[39m %s %s#%u\tconsumer going to \e[93mwait\e[39m\t \e[93m\e[1m[BUSY]\e[0m\e[39m.  Penalty = %d\n", gettime(), product_name[prod_id], consumer_id, penalty);
 
       // clear BUSY_FLAG
       BUSY_FLAG = 0;
@@ -457,12 +457,12 @@ void* run_consumer(void* arg) {
         // clear penalty
         penalty = 0;
         // notify user
-        printf("\e[92m[C ]*\e[39m %s#%u\tconsumer interval is adjusted to %u\n", product_name[prod_id], consumer_id, intv);
+        printf("\e[92m[C]*\e[39m %s#%u\tconsumer interval is adjusted to %u\n", product_name[prod_id], consumer_id, intv);
       }
       // count it as number of tries
       penalty++;
       // notify user
-      printf("\e[92m[C ]\e[39m %s %s#%u\tconsumer going to \e[93mwait\e[39m\t \e[91m\e[1m[EMPTY]\e[0m\e[39m. Penalty = %d\n", gettime(), product_name[prod_id], consumer_id, penalty);
+      printf("\e[92m[C]\e[39m %s %s#%u\tconsumer going to \e[93mwait\e[39m\t \e[91m\e[1m[EMPTY]\e[0m\e[39m. Penalty = %d\n", gettime(), product_name[prod_id], consumer_id, penalty);
 
     } else {
       // else, we can fill the product
@@ -475,7 +475,7 @@ void* run_consumer(void* arg) {
       intv = base_intv;
 
       // notify user
-      printf("\e[92m[C ]\e[39m %s %s\e[92m#%u\tconsumed\e[39m 1 unit. stock after = %d\n", gettime(), product_name[prod_id], consumer_id, supply[prod_id]);
+      printf("\e[92m[C]\e[39m %s %s\e[92m#%u\tconsumed\e[39m 1 unit. stock after = %d\n", gettime(), product_name[prod_id], consumer_id, supply[prod_id]);
     }
 
     // unlock access to supply array of product
