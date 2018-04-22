@@ -5,8 +5,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define SUPPLIER_NUM  2
-#define CONSUMER_NUM  3
+#define SUPPLIER_NUM  5
+#define CONSUMER_NUM  8
 #define SUPPLY_LIMIT  100
 
 char* gettime();
